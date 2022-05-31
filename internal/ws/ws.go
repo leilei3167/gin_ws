@@ -36,7 +36,7 @@ func (s Serve) GetOnlineRoomUserCount(roomId int) int {
 	return GetOnlineRoomUserCount(roomId)
 }
 
-//客户端连接详情(每个房间的信息)
+//客户端连接详情(每个连接入房间的客户的信息)
 type wsClients struct {
 	Conn       *websocket.Conn `json:"conn,omitempty"`
 	RemoteAddr string          `json:"remote_addr,omitempty"`
@@ -92,16 +92,16 @@ func mainProcess(c *websocket.Conn) {
 		_, message, err := c.ReadMessage()
 		serveMsgStr := message
 
-		//是否是处理心跳响应
+		//是否是处理心跳响应(由js发起),是的话直接回应
 		if string(serveMsgStr) == "heartbeat" {
 			c.WriteMessage(websocket.TextMessage, []byte(`{"status":0,"data":"heartbeat ok"}`))
 			continue
 		}
 
+		//正常消息解码输出
 		json.Unmarshal(message, &clientMsg) //写入到clientMsg
 		log.Info("来自客户端的消息", clientMsg, c.RemoteAddr())
 		if clientMsg.Data == nil {
-			//发送空消息直接退出?
 			return
 		}
 

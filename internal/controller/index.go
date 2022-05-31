@@ -43,7 +43,7 @@ func Home(c *gin.Context) {
 		{"id": 2, "num": ws.OnlineRoomUserCount(2)},
 		{"id": 3, "num": ws.OnlineRoomUserCount(3)},
 	}
-	c.HTML(http.StatusOK, "index.html", gin.H{ //传给前端进行渲染
+	c.HTML(http.StatusOK, "index.html", gin.H{ //传给前端进行渲染,包含room的入口
 		"rooms":     rooms,
 		"user_info": userInfo,
 	})

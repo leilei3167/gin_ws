@@ -24,12 +24,13 @@ func InitRoute() *gin.Engine {
 	}
 	router.SetHTMLTemplate(views.GoTpl) //解析embed的模板
 
-	//注册处理器
+	//注册处理器,开启全局cookie session
 	root := router.Group("/", session.EnableCookieSessions())
 	{
 		root.GET("/", controller.Index)       //先尝试获取session中的uid,查询用户信息,如有 跳转home,否则登录
 		root.POST("/login", controller.Login) //登录或注册,成功会被写入一个由数据库ID 组成的uid的sesion
-		root.GET("/ws", ws.Start)             //进入房间时启动ws
+		root.GET("/ws", ws.Start)             //由前端发起升级wb的请求
+
 		{ //直接访问此处的 都必须经过session检查的中间件
 			authorized := root.Group("/", session.AuthSessionMid())
 			{
@@ -37,7 +38,6 @@ func InitRoute() *gin.Engine {
 				authorized.GET("/room/:room_id", controller.Room) //进入房间
 			}
 		}
-
 	}
 
 	return router
